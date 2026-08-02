@@ -1,10 +1,8 @@
 # live-stream-tui
 
-Live **markdown stream** + Hermes-style **render-rate graphs** for the terminal.
+Live markdown streaming and Hermes-style render-rate graphs in the terminal.
 
-Reference: [NousResearch TUI never drops a frame](https://x.com/imbabybrooklyn/status/2078686371573571817)
-(dual-line chart: before O(n) re-parse decays off 60 fps; after per-block
-incremental stays flat at 60 fps while 1,024 blocks stream in).
+Reference: [NousResearch TUI never drops a frame](https://x.com/imbabybrooklyn/status/2078686371573571817). Dual-line chart: naive O(n) re-parse falls off 60 fps; per-block incremental stays flat at 60 fps while 1,024 blocks stream in.
 
 ```
   live-stream graph   ──►  braille dual-line chart (before pink / after cyan)
@@ -44,8 +42,8 @@ Chart:
 
 | series | meaning |
 |--------|---------|
-| cyan **after** | per-block incremental — settled blocks parse once, O(tail) |
-| pink **before** | stable-prefix split — O(n) re-parse each time a block settles |
+| cyan **after** | per-block incremental: settled blocks parse once, O(tail) |
+| pink **before** | stable-prefix split: O(n) re-parse each time a block settles |
 | pink **fill** | area between curves (`f` or `--no-fill`) |
 
 X = markdown blocks rendered (0…1024). Y = effective render rate (fps).
