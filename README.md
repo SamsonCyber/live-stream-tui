@@ -5,9 +5,9 @@ Live markdown streaming and Hermes-style render-rate graphs in the terminal.
 Reference: [NousResearch TUI never drops a frame](https://x.com/imbabybrooklyn/status/2078686371573571817). Dual-line chart: naive O(n) re-parse falls off 60 fps; per-block incremental stays flat at 60 fps while 1,024 blocks stream in.
 
 ```
-  live-stream graph   ──►  braille dual-line chart (before pink / after cyan)
-  live-stream demo    ──►  FPS-capped MarkdownStream coalesce
-  live-stream grok    ──►  real Grok streaming-json
+ live-stream graph ──► braille dual-line chart (before pink / after cyan)
+ live-stream demo ──► FPS-capped MarkdownStream coalesce
+ live-stream grok ──► real Grok streaming-json
 ```
 
 ## Install
@@ -76,13 +76,13 @@ incremental `append` (no full-document `update` thrash).
 
 ```
 src/live_stream_tui/
-  theme.py       Hermes truecolor palette + transparent CSS
-  chart.py       braille dual-series renderer (Hermes layout + fill)
-  graph_app.py   live graph TUI
-  bench.py       before/after parse cost sampler
-  app.py         markdown stream TUI
-  sources.py     demo / flood / grok / stdin
-  metrics.py     thr/lat sparklines for stream mode
+ theme.py Hermes truecolor palette + transparent CSS
+ chart.py braille dual-series renderer (Hermes layout + fill)
+ graph_app.py live graph TUI
+ bench.py before/after parse cost sampler
+ app.py markdown stream TUI
+ sources.py demo / flood / grok / stdin
+ metrics.py thr/lat sparklines for stream mode
 ```
 
 
