@@ -1,71 +1,88 @@
 # live-stream-tui
 
-Live **markdown stream** + Hermes-style **render-rate graphs** for the terminal.
+![live-stream-tui banner](banner.jpg)
 
-Reference: [NousResearch TUI never drops a frame](https://x.com/imbabybrooklyn/status/2078686371573571817)
-(dual-line chart: before O(n) re-parse decays off 60 fps; after per-block
-incremental stays flat at 60 fps while 1,024 blocks stream in).
+Live **markdown stream** TUI + Hermes-style **render-rate graph**, as a
+**Grok Build harness add-on**.
+
+The real binary is Rust. It sits inside a local [xai-org/grok-build](https://github.com/xai-org/grok-build)
+checkout and uses the same `StreamingMarkdownRenderer` the pager uses for
+incremental markdown (checkpoint freeze, O(tail) re-render).
+
+Upstream grok-build does **not** accept external PRs. This repo is the public
+surface + docs + prototype archive. Implementation lives as a local crate in
+your harness tree:
 
 ```
-  live-stream graph   ──►  braille dual-line chart (before pink / after cyan)
-  live-stream demo    ──►  FPS-capped MarkdownStream coalesce
-  live-stream grok    ──►  real Grok streaming-json
+grok-build/crates/codegen/xai-live-stream-tui/
 ```
 
-## Install
+## Why not the Python prototype?
 
-```bash
-git clone https://github.com/SamsonCyber/live-stream-tui.git
-cd live-stream-tui
-pip install -e .
+`ref/python/` is the old Textual demo. Headless smokes passed; the live TUI
+could crash on stream end, and it never used Grok Build's real markdown path.
+Rust + `xai-grok-markdown` is the product.
+
+## In Grok (primary)
+
+The graph is **embedded in the Grok pager chat** as an intentional data
+stream. It auto-shows when the agent calls **`stream_graph`** (or other
+code feeds plot points). Markdown text streaming does **not** open it.
+Optional pin:
+
+```
+/graph              pin plot band (stays) or dismiss (suppress until quiet)
+/graph mode         plot <-> demo <-> live
+/graph fill         pink fill on/off
+/debug graph        same as /graph
 ```
 
-Needs Python 3.11+, `textual`, `rich` (and `markdown-it-py` via textual).
+See [GROK-INTEGRATION.md](GROK-INTEGRATION.md).
 
-## Graph mode (the reference)
+## Standalone binary (requires local grok-build)
+
+```bat
+cd /d C:\Code\grok-build
+cargo build -p xai-live-stream-tui --release
+target\release\live-stream.exe graph --dump
+```
+
+## Use
 
 ```powershell
-# animated Hermes curve (matches the tweet shape)
-py -3.12 -m live_stream_tui graph
+# Hermes dual-line FPS graph (replay curve)
 
-# measure local markdown-it full re-parse vs append-only
-py -3.12 -m live_stream_tui graph --mode bench --blocks 1024
+![live-stream-tui banner](banner.jpg)
+cargo run -p xai-live-stream-tui -- graph
 
-# denser samples / faster paint
-py -3.12 -m live_stream_tui graph --fps 60 --sample-every 2
+# Measure full re-parse vs StreamingMarkdownRenderer
+
+![live-stream-tui banner](banner.jpg)
+cargo run -p xai-live-stream-tui -- graph --mode bench --blocks 128
+
+# Synthetic stream
+
+![live-stream-tui banner](banner.jpg)
+cargo run -p xai-live-stream-tui -- demo
+cargo run -p xai-live-stream-tui -- flood --chars 20000
+
+# Real Grok headless stream into the TUI
+
+![live-stream-tui banner](banner.jpg)
+cargo run -p xai-live-stream-tui -- grok "Explain RoPE in 3 bullets" --yolo
+
+# Pipe any streaming-json producer
+
+![live-stream-tui banner](banner.jpg)
+grok -p "hello" --output-format streaming-json | cargo run -p xai-live-stream-tui -- pipe
 ```
 
-Keys: `q` quit · `r` restart · `m` toggle bench/replay · `f` toggle fill.
-
-Chrome is **transparent** so Windows Terminal wallpaper / opacity shows through.
-Color lives on the curves: sky `#38bdf8` after, pink `#ec4899` before, soft fill in the gap.
-
-Chart:
-
-| series | meaning |
-|--------|---------|
-| cyan **after** | per-block incremental — settled blocks parse once, O(tail) |
-| pink **before** | stable-prefix split — O(n) re-parse each time a block settles |
-| pink **fill** | area between curves (`f` or `--no-fill`) |
-
-X = markdown blocks rendered (0…1024). Y = effective render rate (fps).
-
-## Markdown stream mode
-
-```powershell
-py -3.12 -m live_stream_tui demo
-py -3.12 -m live_stream_tui demo --stress
-py -3.12 -m live_stream_tui flood --chars 20000
-py -3.12 -m live_stream_tui grok "Explain RoPE in 3 bullets with a tiny code sample"
-grok -p "hello" --output-format streaming-json | py -3.12 -m live_stream_tui pipe
-```
-
-Keys: `q` quit · `a` autoscroll · `p` pause.
-
-Stream path uses Textual `MarkdownStream` so token floods coalesce into
-incremental `append` (no full-document `update` thrash).
+Keys (stream): `q` quit Â· `a` autoscroll Â· `p` pause Â· arrows scroll  
+Keys (graph): `q` quit Â· `r` restart Â· `m` toggle replay/bench Â· `f` fill
 
 ## Event format (pipe / grok)
+
+Same as Grok Build headless emitter (`xai-grok-pager` headless):
 
 ```json
 {"type":"text","data":"Hello"}
@@ -74,30 +91,39 @@ incremental `append` (no full-document `update` thrash).
 {"type":"error","message":"..."}
 ```
 
+Other types (`available_commands`, `usage`, â€¦) are ignored.
+
+## Architecture
+
+```
+grok --output-format streaming-json
+        â”‚  NDJSON text/thought/end
+        â–¼
+  live-stream (this crate)
+        â”‚  coalesce at --fps
+        â–¼
+  xai_grok_markdown::StreamingMarkdownRenderer
+        â”‚  freeze settled blocks, re-render tail
+        â–¼
+  ratatui (stream view + Hermes graph)
+```
+
+Graph series:
+
+| series | meaning |
+|--------|---------|
+| cyan **after** | streaming renderer (O(tail)) |
+| pink **before** | full `render_markdown_ratatui_full` each update (O(n)) |
+
 ## Layout
 
-```
-src/live_stream_tui/
-  theme.py       Hermes truecolor palette + transparent CSS
-  chart.py       braille dual-series renderer (Hermes layout + fill)
-  graph_app.py   live graph TUI
-  bench.py       before/after parse cost sampler
-  app.py         markdown stream TUI
-  sources.py     demo / flood / grok / stdin
-  metrics.py     thr/lat sparklines for stream mode
-```
-
-
-## Roadmap
-
-- [x] Shade fill between before/after curves
-- [x] Transparent chrome (host terminal background shows through)
-- [x] Truecolor Hermes pink / cyan palette
-- [ ] Overlay real Textual paint ms from stream mode onto the same chart
-- [ ] Tool-call panels from richer event streams
-- [ ] ratatui + mdstream backend
+| path | role |
+|------|------|
+| `../grok-build/crates/codegen/xai-live-stream-tui/` | Rust implementation |
+| `ref/` | Hermes tweet frames / video |
+| `ref/python/` | retired Textual prototype |
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
-
+MIT for this packaging repo. The harness crate is Apache-2.0 like Grok Build
+(local add-on; not an upstream contribution).
