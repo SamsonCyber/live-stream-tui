@@ -1,8 +1,6 @@
 # live-stream-tui
 
 <<<<<<< HEAD
-![live-stream-tui banner](banner.jpg)
-
 Live **markdown stream** TUI + Hermes-style **render-rate graph**, as a
 **Grok Build harness add-on**.
 
@@ -22,9 +20,9 @@ Live markdown streaming and Hermes-style render-rate graphs in the terminal.
 Reference: [NousResearch TUI never drops a frame](https://x.com/imbabybrooklyn/status/2078686371573571817). Dual-line chart: naive O(n) re-parse falls off 60 fps; per-block incremental stays flat at 60 fps while 1,024 blocks stream in.
 
 ```
- live-stream graph ──► braille dual-line chart (before pink / after cyan)
- live-stream demo ──► FPS-capped MarkdownStream coalesce
- live-stream grok ──► real Grok streaming-json
+ live-stream graph â”€â”€â–º braille dual-line chart (before pink / after cyan)
+ live-stream demo â”€â”€â–º FPS-capped MarkdownStream coalesce
+ live-stream grok â”€â”€â–º real Grok streaming-json
 >>>>>>> origin/main
 ```
 
@@ -63,36 +61,31 @@ target\release\live-stream.exe graph --dump
 ```powershell
 # Hermes dual-line FPS graph (replay curve)
 
-![live-stream-tui banner](banner.jpg)
 cargo run -p xai-live-stream-tui -- graph
 
 # Measure full re-parse vs StreamingMarkdownRenderer
 
-![live-stream-tui banner](banner.jpg)
 cargo run -p xai-live-stream-tui -- graph --mode bench --blocks 128
 
 # Synthetic stream
 
-![live-stream-tui banner](banner.jpg)
 cargo run -p xai-live-stream-tui -- demo
 cargo run -p xai-live-stream-tui -- flood --chars 20000
 
 # Real Grok headless stream into the TUI
 
-![live-stream-tui banner](banner.jpg)
 cargo run -p xai-live-stream-tui -- grok "Explain RoPE in 3 bullets" --yolo
 
 # Pipe any streaming-json producer
 
-![live-stream-tui banner](banner.jpg)
 grok -p "hello" --output-format streaming-json | cargo run -p xai-live-stream-tui -- pipe
 ```
 
 <<<<<<< HEAD
-Keys (stream): `q` quit Â· `a` autoscroll Â· `p` pause Â· arrows scroll  
-Keys (graph): `q` quit Â· `r` restart Â· `m` toggle replay/bench Â· `f` fill
+Keys (stream): `q` quit Ã‚Â· `a` autoscroll Ã‚Â· `p` pause Ã‚Â· arrows scroll  
+Keys (graph): `q` quit Ã‚Â· `r` restart Ã‚Â· `m` toggle replay/bench Ã‚Â· `f` fill
 =======
-Keys: `q` quit · `r` restart · `m` toggle bench/replay · `f` toggle fill.
+Keys: `q` quit Â· `r` restart Â· `m` toggle bench/replay Â· `f` toggle fill.
 
 Chrome is **transparent** so Windows Terminal wallpaper / opacity shows through.
 Color lives on the curves: sky `#38bdf8` after, pink `#ec4899` before, soft fill in the gap.
@@ -105,7 +98,7 @@ Chart:
 | pink **before** | stable-prefix split: O(n) re-parse each time a block settles |
 | pink **fill** | area between curves (`f` or `--no-fill`) |
 
-X = markdown blocks rendered (0…1024). Y = effective render rate (fps).
+X = markdown blocks rendered (0â€¦1024). Y = effective render rate (fps).
 
 ## Markdown stream mode
 
@@ -117,7 +110,7 @@ py -3.12 -m live_stream_tui grok "Explain RoPE in 3 bullets with a tiny code sam
 grok -p "hello" --output-format streaming-json | py -3.12 -m live_stream_tui pipe
 ```
 
-Keys: `q` quit · `a` autoscroll · `p` pause.
+Keys: `q` quit Â· `a` autoscroll Â· `p` pause.
 
 Stream path uses Textual `MarkdownStream` so token floods coalesce into
 incremental `append` (no full-document `update` thrash).
@@ -134,20 +127,20 @@ Same as Grok Build headless emitter (`xai-grok-pager` headless):
 {"type":"error","message":"..."}
 ```
 
-Other types (`available_commands`, `usage`, â€¦) are ignored.
+Other types (`available_commands`, `usage`, Ã¢â‚¬Â¦) are ignored.
 
 ## Architecture
 
 ```
 grok --output-format streaming-json
-        â”‚  NDJSON text/thought/end
-        â–¼
+        Ã¢â€â€š  NDJSON text/thought/end
+        Ã¢â€“Â¼
   live-stream (this crate)
-        â”‚  coalesce at --fps
-        â–¼
+        Ã¢â€â€š  coalesce at --fps
+        Ã¢â€“Â¼
   xai_grok_markdown::StreamingMarkdownRenderer
-        â”‚  freeze settled blocks, re-render tail
-        â–¼
+        Ã¢â€â€š  freeze settled blocks, re-render tail
+        Ã¢â€“Â¼
   ratatui (stream view + Hermes graph)
 ```
 
