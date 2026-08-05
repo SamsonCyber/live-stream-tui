@@ -20,9 +20,9 @@ Live markdown streaming and Hermes-style render-rate graphs in the terminal.
 Reference: [NousResearch TUI never drops a frame](https://x.com/imbabybrooklyn/status/2078686371573571817). Dual-line chart: naive O(n) re-parse falls off 60 fps; per-block incremental stays flat at 60 fps while 1,024 blocks stream in.
 
 ```
- live-stream graph â”€â”€â–º braille dual-line chart (before pink / after cyan)
- live-stream demo â”€â”€â–º FPS-capped MarkdownStream coalesce
- live-stream grok â”€â”€â–º real Grok streaming-json
+ live-stream graph ──► braille dual-line chart (before pink / after cyan)
+ live-stream demo ──► FPS-capped MarkdownStream coalesce
+ live-stream grok ──► real Grok streaming-json
 >>>>>>> origin/main
 ```
 
@@ -82,8 +82,8 @@ grok -p "hello" --output-format streaming-json | cargo run -p xai-live-stream-tu
 ```
 
 <<<<<<< HEAD
-Keys (stream): `q` quit Ã‚Â· `a` autoscroll Ã‚Â· `p` pause Ã‚Â· arrows scroll  
-Keys (graph): `q` quit Ã‚Â· `r` restart Ã‚Â· `m` toggle replay/bench Ã‚Â· `f` fill
+Keys (stream): `q` quit Ã‚· `a` autoscroll Ã‚· `p` pause Ã‚· arrows scroll  
+Keys (graph): `q` quit Ã‚· `r` restart Ã‚· `m` toggle replay/bench Ã‚· `f` fill
 =======
 Keys: `q` quit Â· `r` restart Â· `m` toggle bench/replay Â· `f` toggle fill.
 
@@ -98,7 +98,7 @@ Chart:
 | pink **before** | stable-prefix split: O(n) re-parse each time a block settles |
 | pink **fill** | area between curves (`f` or `--no-fill`) |
 
-X = markdown blocks rendered (0â€¦1024). Y = effective render rate (fps).
+X = markdown blocks rendered (0…1024). Y = effective render rate (fps).
 
 ## Markdown stream mode
 
@@ -127,20 +127,20 @@ Same as Grok Build headless emitter (`xai-grok-pager` headless):
 {"type":"error","message":"..."}
 ```
 
-Other types (`available_commands`, `usage`, Ã¢â‚¬Â¦) are ignored.
+Other types (`available_commands`, `usage`, …) are ignored.
 
 ## Architecture
 
 ```
 grok --output-format streaming-json
         Ã¢â€â€š  NDJSON text/thought/end
-        Ã¢â€“Â¼
+        Ã¢–Â¼
   live-stream (this crate)
         Ã¢â€â€š  coalesce at --fps
-        Ã¢â€“Â¼
+        Ã¢–Â¼
   xai_grok_markdown::StreamingMarkdownRenderer
         Ã¢â€â€š  freeze settled blocks, re-render tail
-        Ã¢â€“Â¼
+        Ã¢–Â¼
   ratatui (stream view + Hermes graph)
 ```
 

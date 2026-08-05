@@ -1,14 +1,14 @@
+# Rust (if ever vendored here)
+/target/
+**/*.rs.bk
+
+# Python prototype leftovers
 __pycache__/
-*.py[cod]
 *.egg-info/
-.eggs/
-dist/
-build/
-.pytest_cache/
-.ruff_cache/
 .venv/
-venv/
-*.log
+*.pyc
+
+# OS
 .DS_Store
 Thumbs.db
 desktop.ini
