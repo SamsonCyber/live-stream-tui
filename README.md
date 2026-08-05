@@ -82,10 +82,10 @@ grok -p "hello" --output-format streaming-json | cargo run -p xai-live-stream-tu
 ```
 
 <<<<<<< HEAD
-Keys (stream): `q` quit Ã‚· `a` autoscroll Ã‚· `p` pause Ã‚· arrows scroll  
-Keys (graph): `q` quit Ã‚· `r` restart Ã‚· `m` toggle replay/bench Ã‚· `f` fill
+Keys (stream): `q` quit · `a` autoscroll · `p` pause · arrows scroll  
+Keys (graph): `q` quit · `r` restart · `m` toggle replay/bench · `f` fill
 =======
-Keys: `q` quit Â· `r` restart Â· `m` toggle bench/replay Â· `f` toggle fill.
+Keys: `q` quit · `r` restart · `m` toggle bench/replay · `f` toggle fill.
 
 Chrome is **transparent** so Windows Terminal wallpaper / opacity shows through.
 Color lives on the curves: sky `#38bdf8` after, pink `#ec4899` before, soft fill in the gap.
@@ -110,7 +110,7 @@ py -3.12 -m live_stream_tui grok "Explain RoPE in 3 bullets with a tiny code sam
 grok -p "hello" --output-format streaming-json | py -3.12 -m live_stream_tui pipe
 ```
 
-Keys: `q` quit Â· `a` autoscroll Â· `p` pause.
+Keys: `q` quit · `a` autoscroll · `p` pause.
 
 Stream path uses Textual `MarkdownStream` so token floods coalesce into
 incremental `append` (no full-document `update` thrash).
@@ -133,14 +133,14 @@ Other types (`available_commands`, `usage`, …) are ignored.
 
 ```
 grok --output-format streaming-json
-        Ã¢â€â€š  NDJSON text/thought/end
-        Ã¢–Â¼
+        │  NDJSON text/thought/end
+        ▼
   live-stream (this crate)
-        Ã¢â€â€š  coalesce at --fps
-        Ã¢–Â¼
+        │  coalesce at --fps
+        ▼
   xai_grok_markdown::StreamingMarkdownRenderer
-        Ã¢â€â€š  freeze settled blocks, re-render tail
-        Ã¢–Â¼
+        │  freeze settled blocks, re-render tail
+        ▼
   ratatui (stream view + Hermes graph)
 ```
 
